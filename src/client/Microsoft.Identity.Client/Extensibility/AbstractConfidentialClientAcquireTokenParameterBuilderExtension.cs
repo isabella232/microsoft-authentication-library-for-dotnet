@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Identity.Client.Extensibility
