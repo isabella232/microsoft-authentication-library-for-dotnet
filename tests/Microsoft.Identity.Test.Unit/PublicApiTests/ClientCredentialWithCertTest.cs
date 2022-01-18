@@ -155,15 +155,18 @@ namespace Microsoft.Identity.Test.Unit
 
         [DataTestMethod]
         [DataRow(true, null, true)]
-        [DataRow(false, null, false)]
-        [DataRow(null, null, false)] // the default is false
-        [DataRow(null, true, true)]
-        [DataRow(null, false, false)]
-        [DataRow(true, true, true)]
-        [DataRow(false, false, false)]
-        [DataRow(true, false, false)] // request overrides
-        [DataRow(false, true, true)] // request overrides
-        public async Task JsonWebTokenWithX509PublicCertSendCertificateWithClaimsTestSendX5cCombinationsAsync(bool? appFlag, bool? requestFlag, bool expectX5c)
+        //[DataRow(false, null, false)]
+        //[DataRow(null, null, false)] // the default is false
+        //[DataRow(null, true, true)]
+        //[DataRow(null, false, false)]
+        //[DataRow(true, true, true)]
+        //[DataRow(false, false, false)]
+        //[DataRow(true, false, false)] // request overrides
+        //[DataRow(false, true, true)] // request overrides
+        public async Task JsonWebTokenWithX509PublicCertSendCertificateWithClaimsTestSendX5cCombinationsAsync(
+            bool? appFlag, 
+            bool? requestFlag, 
+            bool expectX5c)
         {
             using (var harness = CreateTestHarness())
             {
@@ -443,9 +446,10 @@ namespace Microsoft.Identity.Test.Unit
         [Description("Check the JWTHeader when sendCert is true")]
         public void CheckJWTHeaderWithCertTrueTest()
         {
-            var credential = GenerateClientAssertionCredential();
+            var cert = new X509Certificate2(
+                ResourceHelper.GetTestResourceRelativePath("testCert.crtfile"), "passw0rd!");
 
-            var header = new JWTHeaderWithCertificate(credential, true);
+            var header = new JWTHeaderWithCertificate(cert, Base64UrlHelpers.Encode(cert.GetCertHash()), true);
 
             Assert.IsNotNull(header.X509CertificatePublicCertValue);
             Assert.IsNotNull(header.X509CertificateThumbprint);
@@ -455,9 +459,10 @@ namespace Microsoft.Identity.Test.Unit
         [Description("Check the JWTHeader when sendCert is false")]
         public void CheckJWTHeaderWithCertFalseTest()
         {
-            var credential = GenerateClientAssertionCredential();
+            var cert = new X509Certificate2(
+                 ResourceHelper.GetTestResourceRelativePath("testCert.crtfile"), "passw0rd!");
 
-            var header = new JWTHeaderWithCertificate(credential, false);
+            var header = new JWTHeaderWithCertificate(cert, Base64UrlHelpers.Encode(cert.GetCertHash()), false);
 
             Assert.IsNull(header.X509CertificatePublicCertValue);
             Assert.IsNotNull(header.X509CertificateThumbprint);
@@ -508,15 +513,7 @@ namespace Microsoft.Identity.Test.Unit
                 appCacheAccess.AssertAccessCounts(2, 1);
                 userCacheAccess.AssertAccessCounts(0, 0);
             }
-        }
-        private ClientCredentialWrapper GenerateClientAssertionCredential()
-        {
-            var cert = new X509Certificate2(
-            ResourceHelper.GetTestResourceRelativePath("testCert.crtfile"), "passw0rd!");
-
-            var credential = ClientCredentialWrapper.CreateWithCertificate(cert);
-            return credential;
-        }
+        }     
     }
 }
 #endif
